@@ -28,7 +28,7 @@ export default function RadarChart({capitals}: RadarChartProps) {
     const cy = size / 2;
     const maxR = 110;
 
-    // 4軸の角度（上=0, 右=90, 下=180, 左=270）
+    // 4軸の角度（上=-90, 右=0, 下=90, 左=180）
     const angles = [-90, 0, 90, 180];
 
     const toXY = (angle: number, r: number) => ({

@@ -83,7 +83,7 @@ export default function DashboardClient({dataByPeriod}: DashboardClientProps) {
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
                     KPI一覧
                 </h2>
-                <KpiTable capitals={capitals} period={period}/>
+                <KpiTable capitals={capitals}/>
             </div>
         </div>
     );

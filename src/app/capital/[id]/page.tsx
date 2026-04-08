@@ -1,29 +1,34 @@
 import {notFound} from 'next/navigation';
+import {cache} from 'react';
 import {computeCapitalScores} from '../../../../lib/data';
 import CapitalDetailClient from './CapitalDetailClient';
 
 interface PageProps {
-    params: Promise<{id: string}>;
+    params: {id: string};
 }
+
+const getScoresByPeriod = cache(() => ({
+    short: computeCapitalScores('short'),
+    mid: computeCapitalScores('mid'),
+    long: computeCapitalScores('long'),
+}));
 
 /**
  * 資本詳細ページ（サーバーコンポーネント）
  */
-export default async function CapitalPage({params}: PageProps) {
-    const {id} = await params;
+export default function CapitalPage({params}: PageProps) {
+    const {id} = params;
 
-    const short = computeCapitalScores('short');
-    const mid = computeCapitalScores('mid');
-    const long = computeCapitalScores('long');
+    const scoresByPeriod = getScoresByPeriod();
 
     const findCapital = (list: ReturnType<typeof computeCapitalScores>) =>
         list.find(c => c.id === id);
 
-    const shortCap = findCapital(short);
+    const shortCap = findCapital(scoresByPeriod.short);
     if (!shortCap) notFound();
 
-    const midCap = findCapital(mid)!;
-    const longCap = findCapital(long)!;
+    const midCap = findCapital(scoresByPeriod.mid)!;
+    const longCap = findCapital(scoresByPeriod.long)!;
 
     return (
         <main>

@@ -1,16 +1,19 @@
+import {cache} from 'react';
 import {computeCapitalScores} from '../../lib/data';
 import DashboardClient from './components/DashboardClient';
+
+const getDataByPeriod = cache(() => ({
+    short: computeCapitalScores('short'),
+    mid: computeCapitalScores('mid'),
+    long: computeCapitalScores('long'),
+}));
 
 /**
  * ダッシュボードページ（サーバーコンポーネント）
  * 全期間のデータを事前取得してクライアントに渡す
  */
 export default function HomePage() {
-    const dataByPeriod = {
-        short: computeCapitalScores('short'),
-        mid: computeCapitalScores('mid'),
-        long: computeCapitalScores('long'),
-    };
+    const dataByPeriod = getDataByPeriod();
 
     return (
         <main>

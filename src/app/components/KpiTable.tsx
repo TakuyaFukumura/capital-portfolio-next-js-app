@@ -1,10 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import {type CapitalWithScore, type Period, type StrategyType} from '../../../lib/data';
+import {type CapitalWithScore, type StrategyType} from '../../../lib/data';
 
 interface KpiTableProps {
     capitals: CapitalWithScore[];
-    period: Period;
 }
 
 const STRATEGY_BADGE: Record<StrategyType | 'none', string> = {
@@ -46,7 +45,7 @@ export default function KpiTable({capitals}: KpiTableProps) {
                     return cap.kpis.map((kpi, idx) => (
                         <tr
                             key={kpi.id}
-                            className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
+                            className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             {idx === 0 && (
                                 <td

@@ -222,10 +222,11 @@ export default function GuidePage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-capital" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     資本カテゴリ
                                 </label>
                                 <select
+                                    id="kpi-capital"
                                     value={form.capital}
                                     onChange={e => handleChange('capital', e.target.value)}
                                     className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-2 text-sm"
@@ -236,10 +237,11 @@ export default function GuidePage() {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     KPI名
                                 </label>
                                 <input
+                                    id="kpi-name"
                                     type="text"
                                     value={form.name}
                                     onChange={e => handleChange('name', e.target.value)}
@@ -248,10 +250,11 @@ export default function GuidePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     単位
                                 </label>
                                 <input
+                                    id="kpi-unit"
                                     type="text"
                                     value={form.unit}
                                     onChange={e => handleChange('unit', e.target.value)}
@@ -262,10 +265,11 @@ export default function GuidePage() {
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-short-target" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     短期目標値
                                 </label>
                                 <input
+                                    id="kpi-short-target"
                                     type="number"
                                     value={form.shortTarget}
                                     onChange={e => handleChange('shortTarget', e.target.value)}
@@ -274,10 +278,11 @@ export default function GuidePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-mid-target" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     中期目標値
                                 </label>
                                 <input
+                                    id="kpi-mid-target"
                                     type="number"
                                     value={form.midTarget}
                                     onChange={e => handleChange('midTarget', e.target.value)}
@@ -286,10 +291,11 @@ export default function GuidePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label htmlFor="kpi-long-target" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     長期目標値
                                 </label>
                                 <input
+                                    id="kpi-long-target"
                                     type="number"
                                     value={form.longTarget}
                                     onChange={e => handleChange('longTarget', e.target.value)}
