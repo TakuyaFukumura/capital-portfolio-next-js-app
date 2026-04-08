@@ -1,0 +1,13 @@
+id,capital_id,name,unit,type
+ec001,economic,月間貯蓄額,円,result
+ec002,economic,投資額,円,action
+ec003,economic,副業収入,円,result
+hu001,human,週間学習時間,時間,action
+hu002,human,アウトプット数,回,action
+hu003,human,資格取得数,個,result
+cu001,cultural,美術館訪問回数,回,action
+cu002,cultural,読書冊数,冊,action
+cu003,cultural,鑑賞時間,時間,action
+so001,social,交流イベント参加回数,回,action
+so002,social,メンター面談回数,回,action
+so003,social,新規コネクション数,人,result

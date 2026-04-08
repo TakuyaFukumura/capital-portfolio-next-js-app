@@ -1,194 +1,101 @@
 /**
- * データベース機能のテスト
+ * CSV パーサー機能のテスト
  *
- * このテストファイルは、lib/database.tsの機能をテストします。
- * テストでは実際のファイルシステムを使用しますが、テスト専用のディレクトリを作成します。
+ * このテストファイルは、lib/csv.tsの機能をテストします。
  */
 
-import fs from 'fs';
-import path from 'path';
+import {parseCsv} from '../../lib/csv';
 
-// テスト専用のデータディレクトリ・DBパス
-const testDataDir = path.join(__dirname, 'test-data');
-const testDbPath = path.join(testDataDir, 'test-app.db');
+describe('parseCsv', () => {
+    describe('基本的なパース', () => {
+        it('ヘッダーと1行のデータを正しくパースする', () => {
+            const csv = 'id,name\nec001,経済資本';
+            const result = parseCsv<{id: string; name: string}>(csv);
 
-// テスト用ディレクトリ・ファイル操作関数
-function setupTestDir() {
-    if (!fs.existsSync(testDataDir)) {
-        fs.mkdirSync(testDataDir, {recursive: true});
-    }
-    if (fs.existsSync(testDbPath)) {
-        fs.unlinkSync(testDbPath);
-    }
-}
-
-function cleanupTestDir() {
-    if (fs.existsSync(testDbPath)) {
-        fs.unlinkSync(testDbPath);
-    }
-    if (fs.existsSync(testDataDir)) {
-        fs.rmSync(testDataDir, {recursive: true, force: true});
-    }
-}
-
-// pathモジュールのjoinのみモック
-jest.mock('path', () => ({
-    ...jest.requireActual('path'),
-    join: (...args: string[]): string => {
-        if (args[1] === 'data' && args[2] === 'app.db') {
-            return testDbPath;
-        }
-        return jest.requireActual('path').join(...args);
-    },
-}));
-
-describe('Database Functions', () => {
-    // 各テスト前の準備
-    beforeEach(() => {
-        setupTestDir();
-        // モジュールキャッシュをリセットして、各テストで新しいインスタンスを作成
-        jest.resetModules();
-    });
-
-    // 各テスト後のクリーンアップ
-    afterEach(async () => {
-        // データベース接続をクローズ
-        try {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
-            if (db && db.close) db.close();
-        } catch {
-        }
-
-        cleanupTestDir();
-    });
-
-    describe('getDatabase', () => {
-        it('新しいデータベース接続を作成する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
-
-            expect(db).toBeDefined();
-            expect(db.open).toBe(true);
+            expect(result).toHaveLength(1);
+            expect(result[0]).toEqual({id: 'ec001', name: '経済資本'});
         });
 
-        it('messagesテーブルを作成する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
+        it('複数行をパースする', () => {
+            const csv = 'id,name\nec001,経済資本\nhu001,人的資本';
+            const result = parseCsv<{id: string; name: string}>(csv);
 
-            // テーブルの存在を確認
-            const tableInfo = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='messages'").get();
-            expect(tableInfo).toBeDefined();
-            expect(tableInfo).toHaveProperty('name', 'messages');
+            expect(result).toHaveLength(2);
+            expect(result[0].id).toBe('ec001');
+            expect(result[1].id).toBe('hu001');
         });
 
-        it('初期データを挿入する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
+        it('空白行を無視する', () => {
+            const csv = 'id,name\nec001,経済資本\n\nhu001,人的資本\n';
+            const result = parseCsv<{id: string; name: string}>(csv);
 
-            // 初期データの存在を確認
-            const count = db.prepare('SELECT COUNT(*) as count FROM messages').get() as { count: number };
-            expect(count.count).toBe(1);
-
-            const message = db.prepare('SELECT content FROM messages').get() as { content: string };
-            expect(message.content).toBe('Hello, world.');
+            expect(result).toHaveLength(2);
         });
 
-        it('既存のデータベース接続を再利用する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db1 = getDatabase();
-            const db2 = getDatabase();
+        it('ヘッダーのみの場合は空配列を返す', () => {
+            const csv = 'id,name';
+            const result = parseCsv(csv);
 
-            expect(db1).toBe(db2);
+            expect(result).toHaveLength(0);
         });
 
-        it('データベーステーブルの構造を確認する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
+        it('空文字列の場合は空配列を返す', () => {
+            const result = parseCsv('');
+            expect(result).toHaveLength(0);
+        });
 
-            // テーブル構造を確認
-            interface ColumnInfo {
-                name: string;
-                type: string;
-                notnull: number;
-                dflt_value: string | null;
-                pk: number;
-            }
-
-            const tableInfo = db.prepare("PRAGMA table_info(messages)").all() as ColumnInfo[];
-
-            expect(tableInfo).toHaveLength(3);
-            expect(tableInfo.find((col) => col.name === 'id')).toBeDefined();
-            expect(tableInfo.find((col) => col.name === 'content')).toBeDefined();
-            expect(tableInfo.find((col) => col.name === 'created_at')).toBeDefined();
+        it('1行未満の場合は空配列を返す', () => {
+            const result = parseCsv('   ');
+            expect(result).toHaveLength(0);
         });
     });
 
-    describe('getMessage', () => {
-        it('デフォルトメッセージを取得する', async () => {
-            const {getMessage} = await import('../../lib/database');
+    describe('フィールド処理', () => {
+        it('各フィールドの前後の空白をトリムする', () => {
+            const csv = ' id , name \n ec001 , 経済資本 ';
+            const result = parseCsv<{id: string; name: string}>(csv);
 
-            const message = getMessage();
-            expect(message).toBe('Hello, world.');
+            expect(result[0].id).toBe('ec001');
+            expect(result[0].name).toBe('経済資本');
         });
 
-        it('メッセージが存在しない場合はデフォルトメッセージを返す', async () => {
-            const {getDatabase, getMessage} = await import('../../lib/database');
-            const db = getDatabase();
+        it('存在しないフィールドには空文字列を代入する', () => {
+            const csv = 'id,name,extra\nec001,経済資本';
+            const result = parseCsv<{id: string; name: string; extra: string}>(csv);
 
-            // 全てのメッセージを削除
-            db.prepare('DELETE FROM messages').run();
+            expect(result[0].extra).toBe('');
+        });
 
-            const message = getMessage();
-            expect(message).toBe('Hello, world.');
+        it('複数カラムを正しく扱う', () => {
+            const csv = 'id,capital_id,name,unit,type\nec001,economic,月間貯蓄額,円,result';
+            const result = parseCsv<{id: string; capital_id: string; name: string; unit: string; type: string}>(csv);
+
+            expect(result[0]).toEqual({
+                id: 'ec001',
+                capital_id: 'economic',
+                name: '月間貯蓄額',
+                unit: '円',
+                type: 'result',
+            });
         });
     });
 
-    describe('Database Integration', () => {
-        it('複数のメッセージから最新のものを取得する', async () => {
-            const {getDatabase, getMessage} = await import('../../lib/database');
-            const db = getDatabase();
+    describe('実データの形式', () => {
+        it('capital.csvの形式をパースできる', () => {
+            const csv = 'id,name\neconomic,経済資本\nhuman,人的資本\ncultural,文化資本\nsocial,社会関係資本';
+            const result = parseCsv<{id: string; name: string}>(csv);
 
-            // 複数のメッセージを追加（時間間隔を設けるため少し待機）
-            db.prepare('INSERT INTO messages (content) VALUES (?)').run('First message');
-
-            // SQLiteの精度の関係で、わずかに時間をずらす
-            const now = new Date().toISOString();
-            db.prepare('INSERT INTO messages (content, created_at) VALUES (?, ?)').run('Latest message', now);
-
-            const message = getMessage();
-            expect(message).toBe('Latest message');
+            expect(result).toHaveLength(4);
+            expect(result.find(r => r.id === 'economic')?.name).toBe('経済資本');
         });
 
-        it('データベースファイルが存在することを確認する', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            getDatabase();
+        it('goal.csvの数値フィールドをパースできる', () => {
+            const csv = 'kpi_id,period,target_value,current_value\nec001,short,50000,35000';
+            const result = parseCsv<{kpi_id: string; period: string; target_value: string; current_value: string}>(csv);
 
-            expect(fs.existsSync(testDbPath)).toBe(true);
-        });
-
-        it('データベースへの基本的なCRUD操作', async () => {
-            const {getDatabase} = await import('../../lib/database');
-            const db = getDatabase();
-
-            // Create: メッセージを追加
-            const insertResult = db.prepare('INSERT INTO messages (content) VALUES (?)').run('CRUD Test Message');
-            expect(insertResult.changes).toBe(1);
-
-            // Read: メッセージを読み取り
-            const readResult = db.prepare('SELECT content FROM messages WHERE content = ?').get('CRUD Test Message') as {
-                content: string
-            };
-            expect(readResult).toBeDefined();
-            expect(readResult.content).toBe('CRUD Test Message');
-
-            // Update: メッセージを更新
-            const updateResult = db.prepare('UPDATE messages SET content = ? WHERE content = ?').run('Updated CRUD Message', 'CRUD Test Message');
-            expect(updateResult.changes).toBe(1);
-
-            // Delete: メッセージを削除
-            const deleteResult = db.prepare('DELETE FROM messages WHERE content = ?').run('Updated CRUD Message');
-            expect(deleteResult.changes).toBe(1);
+            expect(result[0].target_value).toBe('50000');
+            expect(Number(result[0].target_value)).toBe(50000);
+            expect(Number(result[0].current_value)).toBe(35000);
         });
     });
 });
