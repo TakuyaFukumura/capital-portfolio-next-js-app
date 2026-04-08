@@ -133,7 +133,6 @@ export default function RadarChart({capitals}: RadarChartProps) {
                             dominantBaseline="middle"
                             fontSize={11}
                             className="fill-gray-700 dark:fill-gray-300"
-                            fill="currentColor"
                         >
                             {cap.name}
                         </text>
