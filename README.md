@@ -1,33 +1,45 @@
-# capital-portfolio-next-js-app
+# 資本ポートフォリオ管理アプリ
 
-Next.jsを使ったシンプルな「Hello, world.」アプリケーションです。
-このプロジェクトは、SQLiteデータベースからメッセージを取得して表示する基本的な機能を提供します。
+Next.js を使った個人資本ポートフォリオ管理アプリケーションです。
+4種の資本（経済・人的・文化・社会関係）に対するKPI達成率を可視化し、戦略的な意思決定を支援します。
 
 ## 技術スタック
 
-- **Next.js 16.1.6** - React フレームワーク（App Routerを使用）
-- **React 19.2.4** - ユーザーインターフェース構築
+- **Next.js** - React フレームワーク（App Router を使用）
+- **React** - ユーザーインターフェース構築
 - **TypeScript** - 型安全性
-- **Tailwind CSS 4** - スタイリング
-- **SQLite** - データベース（better-sqlite3）
+- **Tailwind CSS** - スタイリング
 - **ESLint** - コード品質管理
 
 ## 機能
 
-- SQLiteデータベースから「Hello, world.」メッセージを取得
+- 4種の資本（経済・人的・文化・社会関係）のKPI達成率を可視化
+- 期間切り替え（短期・中期・長期）対応のダッシュボード
+- SVGレーダーチャート・水平バーチャート・KPI一覧テーブル
+- 資本詳細ページ（資本別KPI進捗・期間切り替え）
+- KPI設計ガイドページ（設計原則・良い例/悪い例・KPIテンプレート）
 - レスポンシブデザイン対応
 - ダークモード対応（手動切替機能付き）
-    - ライトモードとダークモードの2つのモードを手動で切り替え可能
-    - ユーザーの選択はローカルストレージに保存され、ページ再読み込み時も維持されます
-- TypeScriptによる型安全性
-- モダンなUI/UXデザイン
+- TypeScript による型安全性
+
+## データ構造
+
+データは `public/data/` 配下のCSVファイルで管理します（データベース不使用）。
+
+```
+public/data/
+├── capital.csv   # 資本定義（経済・人的・文化・社会関係）
+├── kpi.csv       # KPI定義（各資本に紐づく指標）
+├── goal.csv      # 目標値・現在値（期間別）
+└── strategy.csv  # 戦略タイプ（reinforce/maintain/suppress）
+```
 
 ## 始め方
 
 ### 前提条件
 
-- Node.js 20.x以上
-- npm、yarn、またはpnpm
+- Node.js 20.x 以上
+- npm、yarn、または pnpm
 
 ### インストール
 
@@ -70,8 +82,7 @@ yarn dev
 pnpm dev
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開いて
-アプリケーションを確認してください。
+ブラウザで [http://localhost:3000](http://localhost:3000) を開いてアプリケーションを確認してください。
 
 ### ビルドと本番デプロイ
 
@@ -88,89 +99,98 @@ npm start
 または
 
 ```bash
-yarn build
-```
-
-```bash
-yarn start
+yarn build && yarn start
 ```
 
 または
 
 ```bash
-pnpm build
-```
-
-```bash
-pnpm start
+pnpm build && pnpm start
 ```
 
 ## プロジェクト構造
 
 ```
 ├── lib/
-│   └── database.ts          # SQLiteデータベース接続・操作
+│   ├── csv.ts               # CSVパーサーユーティリティ
+│   └── data.ts              # データ読み込み・スコア計算ロジック
+├── public/
+│   └── data/
+│       ├── capital.csv      # 資本定義
+│       ├── kpi.csv          # KPI定義
+│       ├── goal.csv         # 目標値・現在値
+│       └── strategy.csv     # 戦略タイプ
 ├── src/
 │   └── app/
 │       ├── api/
-│       │   └── message/
-│       │       └── route.ts # APIエンドポイント
-│       ├── components/      # Reactコンポーネント
-│       │   ├── DarkModeProvider.tsx  # ダークモードProvider
-│       │   └── Header.tsx   # ヘッダーコンポーネント
-│       ├── globals.css      # グローバルスタイル
-│       ├── layout.tsx       # アプリケーションレイアウト
-│       └── page.tsx         # メインページコンポーネント
-├── data/                    # SQLiteデータベースファイル（自動生成）
+│       │   ├── capitals/    # GET /api/capitals?period=short|mid|long
+│       │   └── kpis/        # GET /api/kpis
+│       ├── capital/[id]/    # 資本詳細ページ
+│       ├── components/      # 共通コンポーネント
+│       │   ├── CapitalBarChart.tsx
+│       │   ├── constants.ts          # 共通定数（ラベル・バッジクラス）
+│       │   ├── DarkModeProvider.tsx
+│       │   ├── DashboardClient.tsx
+│       │   ├── Header.tsx
+│       │   ├── KpiTable.tsx
+│       │   └── RadarChart.tsx
+│       ├── guide/           # KPI設計ガイドページ
+│       ├── globals.css
+│       ├── layout.tsx
+│       └── page.tsx         # ダッシュボード（トップページ）
+├── __tests__/               # テスト
 ├── package.json
 ├── next.config.ts
-├── tailwind.config.ts
 └── tsconfig.json
 ```
 
 ## API エンドポイント
 
-### GET /api/message
+### GET /api/capitals
 
-データベースから最新のメッセージを取得します。
+資本スコア一覧を返します。
 
-**レスポンス:**
+**クエリパラメータ:**
+
+| パラメータ | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `period` | `short` \| `mid` \| `long` | `short` | 期間 |
+
+**レスポンス例:**
 
 ```json
-{
-  "message": "Hello, world."
-}
+[
+  {
+    "id": "economic",
+    "name": "経済資本",
+    "score": 0.75,
+    "kpis": [...],
+    "strategy": { "strategy_type": "reinforce", ... }
+  }
+]
 ```
 
-## データベース
+### GET /api/kpis
 
-SQLiteデータベースは初回起動時に自動的に作成されます：
+KPI一覧を返します。
 
-- データベースファイル: `data/app.db`
-- テーブル: `messages`
-    - `id`: 自動増分プライマリーキー
-    - `content`: メッセージ内容
-    - `created_at`: 作成日時
+**レスポンス例:**
 
-## カスタマイズ
-
-### メッセージの変更
-
-データベース内のメッセージを変更したい場合は、
-SQLiteクライアントを使用して `data/app.db` ファイル内の `messages` テーブルを編集してください。
-
-### スタイルの変更
-
-スタイルは Tailwind CSS を使用しています。
-`src/app/page.tsx` ファイル内のクラス名を変更することで、外観をカスタマイズできます。
+```json
+[
+  {
+    "id": "kpi_savings",
+    "capital_id": "economic",
+    "name": "月間貯蓄額",
+    "unit": "円",
+    "type": "result"
+  }
+]
+```
 
 ## 開発
 
 ### テスト
-
-このプロジェクトはJestを使用したテストが設定されています。
-
-#### テストの実行
 
 ```bash
 npm test
@@ -202,16 +222,10 @@ npm run test:coverage
 
 #### テストファイルの構成
 
-- `__tests__/lib/database.test.ts`: データベース機能のテスト
+- `__tests__/lib/csv.test.ts`: CSVパーサーのテスト
+- `__tests__/lib/data.test.ts`: データ読み込み・スコア計算ロジックのテスト
 - `__tests__/src/app/components/DarkModeProvider.test.tsx`: ダークモードProvider のテスト
 - `__tests__/src/app/components/Header.test.tsx`: ヘッダーコンポーネントのテスト
-
-#### テストの特徴
-
-- **データベーステスト**: SQLiteを使用した実際のデータベース操作のテスト
-- **Reactコンポーネントテスト**: React Testing Library を使用したコンポーネントのレンダリングとインタラクションのテスト
-- **モッキング**: localStorage や外部依存関係のモック
-- **カバレッジ**: コードカバレッジの測定と報告
 
 ### リンティング
 
@@ -231,48 +245,36 @@ yarn lint
 pnpm lint
 ```
 
-### 型チェック
-
-TypeScriptの型チェックは、ビルド時またはIDEで自動的に実行されます。
-
 ## CI/CD
 
-このプロジェクトはGitHub Actionsを使用した継続的インテグレーション（CI）を設定しています。
+このプロジェクトは GitHub Actions を使用した継続的インテグレーション（CI）を設定しています。
 
 ### 自動テスト
 
-以下の条件でCIが実行されます：
+以下の条件で CI が実行されます：
 
-- `main`ブランチへのプッシュ時
+- `main` ブランチへのプッシュ時
 - プルリクエストの作成・更新時
 
-CIでは以下のチェックが行われます：
+CI では以下のチェックが行われます：
 
-- ESLintによる静的解析
-- TypeScriptの型チェック
-- Jestを使用したユニットテストとインテグレーションテスト
+- ESLint による静的解析
+- TypeScript の型チェック
+- Jest を使用したユニットテスト
 - アプリケーションのビルド検証
 - Node.js 20.x での動作確認
 
 ## 自動依存関係更新（Dependabot）
 
-このプロジェクトでは、依存関係の安全性と最新化のために[Dependabot](https://docs.github.com/ja/code-security/dependabot)
-を利用しています。
+このプロジェクトでは、依存関係の安全性と最新化のために [Dependabot](https://docs.github.com/ja/code-security/dependabot) を利用しています。
 
-- GitHub Actionsおよびnpmパッケージの依存関係は**月次（月曜日 09:00 JST）**で自動チェック・更新されます。
+- GitHub Actions および npm パッケージの依存関係は**月次（月曜日 09:00 JST）**で自動チェック・更新されます。
 - 更新内容は自動でプルリクエストとして作成されます。
 - 詳細な設定は `.github/dependabot.yml` を参照してください。
 
-## トラブルシューティング
+## ポート競合
 
-### データベース関連のエラー
-
-- `data/` フォルダが存在しない場合、自動的に作成されます
-- データベースファイルが破損した場合は、`data/app.db` を削除して再起動してください
-
-### ポート競合
-
-デフォルトのポート3000が使用中の場合：
+デフォルトのポート 3000 が使用中の場合：
 
 ```bash
 npm run dev -- --port 3001

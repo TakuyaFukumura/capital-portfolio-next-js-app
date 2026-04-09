@@ -28,7 +28,7 @@ describe('Header', () => {
         it('ヘッダータイトルが表示される', () => {
             renderWithProvider();
 
-            expect(screen.getByText('capital-portfolio-next-js-app')).toBeInTheDocument();
+            expect(screen.getByText('資本ポートフォリオ')).toBeInTheDocument();
         });
 
         it('ヘッダーのHTML構造が正しい', () => {

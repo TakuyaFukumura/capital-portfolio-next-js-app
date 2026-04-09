@@ -1,0 +1,13 @@
+capital_id,period,strategy_type
+economic,short,reinforce
+economic,mid,reinforce
+economic,long,maintain
+human,short,reinforce
+human,mid,reinforce
+human,long,reinforce
+cultural,short,maintain
+cultural,mid,maintain
+cultural,long,reinforce
+social,short,maintain
+social,mid,reinforce
+social,long,reinforce
