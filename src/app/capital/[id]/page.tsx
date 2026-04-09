@@ -4,7 +4,7 @@ import {computeCapitalScores} from '../../../../lib/data';
 import CapitalDetailClient from './CapitalDetailClient';
 
 interface PageProps {
-    params: {id: string};
+    params: { id: string };
 }
 
 const getScoresByPeriod = cache(() => ({

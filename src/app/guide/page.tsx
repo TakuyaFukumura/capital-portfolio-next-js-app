@@ -159,11 +159,15 @@ export default function GuidePage() {
                             <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">{ex.capital}</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
-                                    <div className="text-xs font-semibold text-green-600 dark:text-green-400 mb-1">✅ 良い例</div>
+                                    <div className="text-xs font-semibold text-green-600 dark:text-green-400 mb-1">✅
+                                        良い例
+                                    </div>
                                     <div className="text-sm text-gray-700 dark:text-gray-300">{ex.good}</div>
                                 </div>
                                 <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
-                                    <div className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">❌ 悪い例</div>
+                                    <div className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">❌
+                                        悪い例
+                                    </div>
                                     <div className="text-sm text-gray-700 dark:text-gray-300">{ex.bad}</div>
                                 </div>
                             </div>
