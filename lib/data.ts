@@ -58,29 +58,42 @@ export function loadCapitals(): Capital[] {
 
 export function loadKpis(): KPI[] {
     const content = fs.readFileSync(dataPath('kpi.csv'), 'utf-8');
-    return parseCsv<{ id: string; capital_id: string; name: string; unit: string; type: string }>(content).map(row => ({
-        ...row,
-        type: row.type as 'action' | 'result',
-    }));
+    return parseCsv<{ id: string; capital_id: string; name: string; unit: string; type: string }>(content).map(row => {
+        const validTypes: Array<'action' | 'result'> = ['action', 'result'];
+        const type: 'action' | 'result' = validTypes.includes(row.type as 'action' | 'result')
+            ? row.type as 'action' | 'result'
+            : 'result';
+        return {...row, type};
+    });
 }
 
 export function loadGoals(): Goal[] {
     const content = fs.readFileSync(dataPath('goal.csv'), 'utf-8');
-    return parseCsv<{ kpi_id: string; period: string; target_value: string; current_value: string }>(content).map(row => ({
-        kpi_id: row.kpi_id,
-        period: row.period as Period,
-        target_value: Number(row.target_value),
-        current_value: Number(row.current_value),
-    }));
+    const validPeriods: Period[] = ['short', 'mid', 'long'];
+    return parseCsv<{ kpi_id: string; period: string; target_value: string; current_value: string }>(content)
+        .filter(row => validPeriods.includes(row.period as Period))
+        .map(row => ({
+            kpi_id: row.kpi_id,
+            period: row.period as Period,
+            target_value: Number(row.target_value),
+            current_value: Number(row.current_value),
+        }));
 }
 
 export function loadStrategies(): Strategy[] {
     const content = fs.readFileSync(dataPath('strategy.csv'), 'utf-8');
-    return parseCsv<{ capital_id: string; period: string; strategy_type: string }>(content).map(row => ({
-        capital_id: row.capital_id,
-        period: row.period as Period,
-        strategy_type: row.strategy_type as StrategyType,
-    }));
+    const validPeriods: Period[] = ['short', 'mid', 'long'];
+    const validStrategyTypes: StrategyType[] = ['reinforce', 'maintain', 'suppress'];
+    return parseCsv<{ capital_id: string; period: string; strategy_type: string }>(content)
+        .filter(row =>
+            validPeriods.includes(row.period as Period) &&
+            validStrategyTypes.includes(row.strategy_type as StrategyType)
+        )
+        .map(row => ({
+            capital_id: row.capital_id,
+            period: row.period as Period,
+            strategy_type: row.strategy_type as StrategyType,
+        }));
 }
 
 /** 指定期間の資本スコアを計算する */
@@ -90,12 +103,35 @@ export function computeCapitalScores(period: Period): CapitalWithScore[] {
     const goals = loadGoals();
     const strategies = loadStrategies();
 
+    // インデックスを事前構築して線形探索を回避
+    const goalMap = new Map<string, Goal>();
+    for (const goal of goals) {
+        if (goal.period === period) {
+            goalMap.set(goal.kpi_id, goal);
+        }
+    }
+
+    const strategyMap = new Map<string, Strategy>();
+    for (const strategy of strategies) {
+        if (strategy.period === period) {
+            strategyMap.set(strategy.capital_id, strategy);
+        }
+    }
+
+    // KPIを資本IDでグループ化
+    const kpisByCapital = new Map<string, KPI[]>();
+    for (const kpi of kpis) {
+        const list = kpisByCapital.get(kpi.capital_id) ?? [];
+        list.push(kpi);
+        kpisByCapital.set(kpi.capital_id, list);
+    }
+
     return capitals.map(capital => {
-        const capitalKpis = kpis.filter(k => k.capital_id === capital.id);
-        const strategy = strategies.find(s => s.capital_id === capital.id && s.period === period);
+        const capitalKpis = kpisByCapital.get(capital.id) ?? [];
+        const strategy = strategyMap.get(capital.id);
 
         const kpisWithAchievement: KPIWithAchievement[] = capitalKpis.map(kpi => {
-            const goal = goals.find(g => g.kpi_id === kpi.id && g.period === period);
+            const goal = goalMap.get(kpi.id);
             const target_value = goal?.target_value ?? 0;
             const current_value = goal?.current_value ?? 0;
             const achievement = target_value > 0

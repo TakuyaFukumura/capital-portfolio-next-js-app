@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import KpiForm from './KpiForm';
 
 const CAPITAL_DESCRIPTIONS = [
     {
@@ -106,7 +105,6 @@ const TEMPLATES = [
 
 /**
  * KPI設計ガイドページ（サーバーコンポーネント）
- * インタラクティブなKPI作成フォームのみ KpiForm クライアントコンポーネントに委譲する
  */
 export default function GuidePage() {
     return (
@@ -174,13 +172,7 @@ export default function GuidePage() {
                 </div>
             </section>
 
-            {/* 4. KPI作成フォーム（クライアントコンポーネント） */}
-            <section className="mb-10">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">KPI作成フォーム</h2>
-                <KpiForm />
-            </section>
-
-            {/* 5. テンプレート */}
+            {/* 4. テンプレート */}
             <section>
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">KPIテンプレート</h2>
                 <div className="space-y-4">

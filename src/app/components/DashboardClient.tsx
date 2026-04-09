@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from 'react';
-import {type CapitalWithScore, type Period, type StrategyType} from '../../../lib/data';
+import {type CapitalWithScore, type Period} from '../../../lib/data';
 import RadarChart from './RadarChart';
 import CapitalBarChart from './CapitalBarChart';
 import KpiTable from './KpiTable';
@@ -14,13 +14,6 @@ const PERIOD_LABELS: Record<Period, string> = {
     short: '短期',
     mid: '中期',
     long: '長期',
-};
-
-export const STRATEGY_LABELS: Record<StrategyType | 'none', string> = {
-    reinforce: '強化',
-    maintain: '維持',
-    suppress: '抑制',
-    none: '未設定',
 };
 
 export default function DashboardClient({dataByPeriod}: DashboardClientProps) {

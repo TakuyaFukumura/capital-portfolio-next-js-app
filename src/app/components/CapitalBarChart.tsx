@@ -1,6 +1,6 @@
 import React from 'react';
 import {type CapitalWithScore, type StrategyType} from '../../../lib/data';
-import {STRATEGY_LABELS} from './DashboardClient';
+import {STRATEGY_LABELS} from './constants';
 
 interface CapitalBarChartProps {
     capitals: CapitalWithScore[];
