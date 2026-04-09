@@ -1,5 +1,8 @@
+import {cache} from 'react';
 import {NextRequest, NextResponse} from 'next/server';
 import {computeCapitalScores, type Period} from '../../../../lib/data';
+
+const getCachedCapitalScores = cache((period: Period) => computeCapitalScores(period));
 
 /**
  * 資本スコア一覧を返すAPIエンドポイント
@@ -13,7 +16,7 @@ export async function GET(request: NextRequest) {
             ? (periodParam as Period)
             : 'short';
 
-        const capitals = computeCapitalScores(period);
+        const capitals = getCachedCapitalScores(period);
         return NextResponse.json(capitals);
     } catch (error) {
         console.error('資本スコアの取得に失敗しました:', error);

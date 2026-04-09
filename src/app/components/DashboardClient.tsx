@@ -16,20 +16,6 @@ const PERIOD_LABELS: Record<Period, string> = {
     long: '長期',
 };
 
-export const STRATEGY_COLORS: Record<StrategyType | 'none', string> = {
-    reinforce: 'bg-blue-500',
-    maintain: 'bg-gray-400',
-    suppress: 'bg-orange-500',
-    none: 'bg-purple-500',
-};
-
-export const STRATEGY_TEXT_COLORS: Record<StrategyType | 'none', string> = {
-    reinforce: 'text-blue-600',
-    maintain: 'text-gray-500',
-    suppress: 'text-orange-600',
-    none: 'text-purple-600',
-};
-
 export const STRATEGY_LABELS: Record<StrategyType | 'none', string> = {
     reinforce: '強化',
     maintain: '維持',

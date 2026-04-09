@@ -27,8 +27,11 @@ export default function CapitalPage({params}: PageProps) {
     const shortCap = findCapital(scoresByPeriod.short);
     if (!shortCap) notFound();
 
-    const midCap = findCapital(scoresByPeriod.mid)!;
-    const longCap = findCapital(scoresByPeriod.long)!;
+    const midCap = findCapital(scoresByPeriod.mid);
+    if (!midCap) notFound();
+
+    const longCap = findCapital(scoresByPeriod.long);
+    if (!longCap) notFound();
 
     return (
         <main>

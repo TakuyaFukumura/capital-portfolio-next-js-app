@@ -31,6 +31,14 @@ export default function RadarChart({capitals}: RadarChartProps) {
     // 4軸の角度（上=-90, 右=0, 下=90, 左=180）
     const angles = [-90, 0, 90, 180];
 
+    if (capitals.length !== angles.length) {
+        return (
+            <div className="flex items-center justify-center h-48 text-sm text-gray-500 dark:text-gray-400">
+                データを表示できません（資本数: {capitals.length}）
+            </div>
+        );
+    }
+
     const toXY = (angle: number, r: number) => ({
         x: cx + r * Math.cos((angle * Math.PI) / 180),
         y: cy + r * Math.sin((angle * Math.PI) / 180),
