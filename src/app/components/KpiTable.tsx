@@ -49,7 +49,8 @@ export default function KpiTable({capitals}: KpiTableProps) {
                             )}
                             <td className="py-2 px-3 text-gray-700 dark:text-gray-300">{kpi.name}</td>
                             <td className="py-2 px-3">
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                <span
+                                    className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
                                     {TYPE_LABEL[kpi.type]}
                                 </span>
                             </td>
