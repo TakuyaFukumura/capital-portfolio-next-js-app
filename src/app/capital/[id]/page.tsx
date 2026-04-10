@@ -1,6 +1,6 @@
 import {notFound} from 'next/navigation';
 import {cache} from 'react';
-import {computeCapitalScores, VALID_PERIODS, type CapitalWithScore, type Period} from '../../../../lib/data';
+import {type CapitalWithScore, computeCapitalScores, type Period, VALID_PERIODS} from '../../../../lib/data';
 import CapitalDetailClient from './CapitalDetailClient';
 
 interface PageProps {
