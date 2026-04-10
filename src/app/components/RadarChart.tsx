@@ -3,13 +3,13 @@ import {type CapitalWithScore} from '../../../lib/data';
 import {STRATEGY_FILL, STRATEGY_STROKE} from './constants';
 
 interface RadarChartProps {
-    capitals: CapitalWithScore[];
+    readonly capitals: ReadonlyArray<CapitalWithScore>;
 }
 
 /**
  * 資本をレーダーチャート上に均等配置するコンポーネント
  */
-export default function RadarChart({capitals}: RadarChartProps) {
+export default function RadarChart({capitals}: Readonly<RadarChartProps>) {
     const size = 300;
     const cx = size / 2;
     const cy = size / 2;
@@ -71,11 +71,11 @@ export default function RadarChart({capitals}: RadarChartProps) {
             })}
 
             {/* 軸線 */}
-            {angles.map((angle, i) => {
+            {angles.map(angle => {
                 const end = toXY(angle, maxR);
                 return (
                     <line
-                        key={i}
+                        key={`axis-${angle}`}
                         x1={cx}
                         y1={cy}
                         x2={end.x}

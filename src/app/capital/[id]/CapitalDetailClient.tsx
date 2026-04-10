@@ -8,10 +8,10 @@ import PeriodTabs from '../../components/PeriodTabs';
 import AchievementBar from '../../components/AchievementBar';
 
 interface CapitalDetailClientProps {
-    dataByPeriod: Record<Period, CapitalWithScore>;
+    readonly dataByPeriod: Readonly<Record<Period, CapitalWithScore>>;
 }
 
-export default function CapitalDetailClient({dataByPeriod}: CapitalDetailClientProps) {
+export default function CapitalDetailClient({dataByPeriod}: Readonly<CapitalDetailClientProps>) {
     const [period, setPeriod] = useState<Period>('short');
     const capital = dataByPeriod[period];
     const strategy = capital.strategy?.strategy_type ?? 'none';

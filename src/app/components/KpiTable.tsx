@@ -5,10 +5,10 @@ import {STRATEGY_BADGE, STRATEGY_LABELS, TYPE_LABEL} from './constants';
 import AchievementBar from './AchievementBar';
 
 interface KpiTableProps {
-    capitals: CapitalWithScore[];
+    readonly capitals: ReadonlyArray<CapitalWithScore>;
 }
 
-export default function KpiTable({capitals}: KpiTableProps) {
+export default function KpiTable({capitals}: Readonly<KpiTableProps>) {
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-sm">
