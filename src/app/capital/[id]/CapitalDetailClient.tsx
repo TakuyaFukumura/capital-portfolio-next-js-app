@@ -4,16 +4,12 @@ import React, {useState} from 'react';
 import Link from 'next/link';
 import {type CapitalWithScore, type Period} from '../../../../lib/data';
 import {STRATEGY_BADGE, STRATEGY_LABELS, TYPE_LABEL} from '../../components/constants';
+import PeriodTabs from '../../components/PeriodTabs';
+import AchievementBar from '../../components/AchievementBar';
 
 interface CapitalDetailClientProps {
     dataByPeriod: Record<Period, CapitalWithScore>;
 }
-
-const PERIOD_LABELS: Record<Period, string> = {
-    short: '短期',
-    mid: '中期',
-    long: '長期',
-};
 
 export default function CapitalDetailClient({dataByPeriod}: CapitalDetailClientProps) {
     const [period, setPeriod] = useState<Period>('short');
@@ -41,20 +37,8 @@ export default function CapitalDetailClient({dataByPeriod}: CapitalDetailClientP
             </div>
 
             {/* 期間タブ */}
-            <div className="flex gap-2 mb-6">
-                {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
-                    <button
-                        key={p}
-                        onClick={() => setPeriod(p)}
-                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 ${
-                            period === p
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                        }`}
-                    >
-                        {PERIOD_LABELS[p]}
-                    </button>
-                ))}
+            <div className="mb-6">
+                <PeriodTabs period={period} onChange={setPeriod}/>
             </div>
 
             {/* スコアサマリー */}
@@ -107,17 +91,7 @@ export default function CapitalDetailClient({dataByPeriod}: CapitalDetailClientP
                                     {kpi.target_value.toLocaleString()} {kpi.unit}
                                 </td>
                                 <td className="py-3 px-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 min-w-16">
-                                            <div
-                                                className="h-2 rounded-full bg-blue-500"
-                                                style={{width: `${Math.round(kpi.achievement * 100)}%`}}
-                                            />
-                                        </div>
-                                        <span className="text-xs text-gray-600 dark:text-gray-400 w-10 text-right">
-                                            {Math.round(kpi.achievement * 100)}%
-                                        </span>
-                                    </div>
+                                    <AchievementBar achievement={kpi.achievement}/>
                                 </td>
                             </tr>
                         ))}

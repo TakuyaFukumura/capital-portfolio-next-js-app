@@ -1,24 +1,10 @@
 import React from 'react';
-import {type CapitalWithScore, type StrategyType} from '../../../lib/data';
-import {STRATEGY_LABELS} from './constants';
+import {type CapitalWithScore} from '../../../lib/data';
+import {STRATEGY_BAR_COLOR, STRATEGY_LABELS, STRATEGY_TEXT} from './constants';
 
 interface CapitalBarChartProps {
     capitals: CapitalWithScore[];
 }
-
-const STRATEGY_BAR_COLOR: Record<StrategyType | 'none', string> = {
-    reinforce: 'bg-blue-500',
-    maintain: 'bg-gray-400',
-    suppress: 'bg-orange-500',
-    none: 'bg-purple-500',
-};
-
-const STRATEGY_TEXT: Record<StrategyType | 'none', string> = {
-    reinforce: 'text-blue-600 dark:text-blue-400',
-    maintain: 'text-gray-500 dark:text-gray-400',
-    suppress: 'text-orange-600 dark:text-orange-400',
-    none: 'text-purple-600 dark:text-purple-400',
-};
 
 export default function CapitalBarChart({capitals}: CapitalBarChartProps) {
     return (

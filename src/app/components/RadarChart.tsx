@@ -1,26 +1,13 @@
 import React from 'react';
-import {type CapitalWithScore, type StrategyType} from '../../../lib/data';
+import {type CapitalWithScore} from '../../../lib/data';
+import {STRATEGY_FILL, STRATEGY_STROKE} from './constants';
 
 interface RadarChartProps {
     capitals: CapitalWithScore[];
 }
 
-const STRATEGY_FILL: Record<StrategyType | 'none', string> = {
-    reinforce: 'rgba(59, 130, 246, 0.3)',
-    maintain: 'rgba(156, 163, 175, 0.3)',
-    suppress: 'rgba(249, 115, 22, 0.3)',
-    none: 'rgba(168, 85, 247, 0.3)',
-};
-
-const STRATEGY_STROKE: Record<StrategyType | 'none', string> = {
-    reinforce: 'rgb(59, 130, 246)',
-    maintain: 'rgb(156, 163, 175)',
-    suppress: 'rgb(249, 115, 22)',
-    none: 'rgb(168, 85, 247)',
-};
-
 /**
- * 4資本をダイヤモンド配置（上・右・下・左）するレーダーチャート
+ * 資本をレーダーチャート上に均等配置するコンポーネント
  */
 export default function RadarChart({capitals}: RadarChartProps) {
     const size = 300;
@@ -28,16 +15,16 @@ export default function RadarChart({capitals}: RadarChartProps) {
     const cy = size / 2;
     const maxR = 110;
 
-    // 4軸の角度（上=-90, 右=0, 下=90, 左=180）
-    const angles = [-90, 0, 90, 180];
-
-    if (capitals.length !== angles.length) {
+    if (capitals.length === 0) {
         return (
             <div className="flex items-center justify-center h-48 text-sm text-gray-500 dark:text-gray-400">
                 データを表示できません（資本数: {capitals.length}）
             </div>
         );
     }
+
+    // 資本数に応じて角度を均等配置（先頭を上=-90度に固定）
+    const angles = capitals.map((_, i) => (360 / capitals.length) * i - 90);
 
     const toXY = (angle: number, r: number) => ({
         x: cx + r * Math.cos((angle * Math.PI) / 180),

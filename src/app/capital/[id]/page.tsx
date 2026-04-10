@@ -1,6 +1,6 @@
 import {notFound} from 'next/navigation';
 import {cache} from 'react';
-import {computeCapitalScores} from '../../../../lib/data';
+import {computeCapitalScores, type Period} from '../../../../lib/data';
 import CapitalDetailClient from './CapitalDetailClient';
 
 interface PageProps {
@@ -21,17 +21,14 @@ export default function CapitalPage({params}: PageProps) {
 
     const scoresByPeriod = getScoresByPeriod();
 
-    const findCapital = (list: ReturnType<typeof computeCapitalScores>) =>
-        list.find(c => c.id === id);
+    const findCapital = (period: Period) =>
+        scoresByPeriod[period].find(c => c.id === id);
 
-    const shortCap = findCapital(scoresByPeriod.short);
-    if (!shortCap) notFound();
+    const periods: Period[] = ['short', 'mid', 'long'];
+    const found = periods.map(findCapital);
+    if (found.some(cap => !cap)) notFound();
 
-    const midCap = findCapital(scoresByPeriod.mid);
-    if (!midCap) notFound();
-
-    const longCap = findCapital(scoresByPeriod.long);
-    if (!longCap) notFound();
+    const [shortCap, midCap, longCap] = found as NonNullable<ReturnType<typeof findCapital>>[];
 
     return (
         <main>

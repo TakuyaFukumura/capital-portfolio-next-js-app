@@ -32,11 +32,27 @@
 - lib/data.ts: computeCapitalScores()をMapベースのインデックスで最適化
 - README.md: アプリケーション概要・構造・APIを資本ポートフォリオ管理アプリ向けに更新
 
+### リファクタリング
+
+- lib/data.ts: `VALID_PERIODS` 定数を追加・エクスポートし、期間バリデーション箇所を一元化
+- src/app/api/capitals/route.ts: 期間バリデーションに `VALID_PERIODS` を使用するよう変更
+- src/app/components/constants.ts: `PERIOD_LABELS`・`STRATEGY_BAR_COLOR`・`STRATEGY_TEXT`・`STRATEGY_FILL`・`STRATEGY_STROKE` を追加し、ストラテジー関連カラー定数をファイル全体で集約
+- src/app/components/PeriodTabs.tsx: 期間タブUIコンポーネントを新規作成し、重複していたタブ実装を共通化
+- src/app/components/AchievementBar.tsx: 達成率バーコンポーネントを新規作成し、重複していたプログレスバー実装を共通化
+- src/app/components/DashboardClient.tsx: `PERIOD_LABELS` ローカル定義を削除し `PeriodTabs` を使用するよう変更
+- src/app/capital/[id]/CapitalDetailClient.tsx: `PERIOD_LABELS` ローカル定義を削除し `PeriodTabs`・`AchievementBar` を使用するよう変更
+- src/app/components/KpiTable.tsx: `AchievementBar` を使用するよう変更
+- src/app/components/CapitalBarChart.tsx: ローカル定義のカラー定数を削除し `constants.ts` からインポートするよう変更
+- src/app/components/RadarChart.tsx: ローカル定義のカラー定数を削除し `constants.ts` からインポート、資本数に応じた動的角度計算に変更
+- src/app/capital/[id]/page.tsx: `notFound()` 呼び出しの重複を排除
+- src/app/components/Header.tsx: `getThemeIcon()`・`getThemeLabel()` 関数をオブジェクトルックアップに簡略化
+
 ### 削除
 
 - src/app/api/message/route.ts: SQLiteベースのメッセージAPIを削除
 - lib/database.ts: SQLiteデータベース接続モジュールを削除
 - better-sqlite3 / @types/better-sqlite3: SQLite依存関係を削除
+- docs/refactoring.md: リファクタリング実装完了のため削除
 
 ## [0.1.0] - 2026-04-08
 

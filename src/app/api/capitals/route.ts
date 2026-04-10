@@ -1,6 +1,6 @@
 import {cache} from 'react';
 import {NextRequest, NextResponse} from 'next/server';
-import {computeCapitalScores, type Period} from '../../../../lib/data';
+import {computeCapitalScores, type Period, VALID_PERIODS} from '../../../../lib/data';
 
 const getCachedCapitalScores = cache((period: Period) => computeCapitalScores(period));
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     try {
         const {searchParams} = new URL(request.url);
         const periodParam = searchParams.get('period') ?? 'short';
-        const period: Period = ['short', 'mid', 'long'].includes(periodParam)
+        const period: Period = VALID_PERIODS.includes(periodParam as Period)
             ? (periodParam as Period)
             : 'short';
 
