@@ -5,11 +5,11 @@ import {type Period} from '../../../lib/data';
 import {PERIOD_LABELS} from './constants';
 
 interface PeriodTabsProps {
-    period: Period;
-    onChange: (period: Period) => void;
+    readonly period: Period;
+    readonly onChange: (period: Period) => void;
 }
 
-export default function PeriodTabs({period, onChange}: PeriodTabsProps) {
+export default function PeriodTabs({period, onChange}: Readonly<PeriodTabsProps>) {
     return (
         <div className="flex gap-2">
             {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (

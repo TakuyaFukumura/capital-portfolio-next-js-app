@@ -8,10 +8,10 @@ import KpiTable from './KpiTable';
 import PeriodTabs from './PeriodTabs';
 
 interface DashboardClientProps {
-    dataByPeriod: Record<Period, CapitalWithScore[]>;
+    readonly dataByPeriod: Readonly<Record<Period, CapitalWithScore[]>>;
 }
 
-export default function DashboardClient({dataByPeriod}: DashboardClientProps) {
+export default function DashboardClient({dataByPeriod}: Readonly<DashboardClientProps>) {
     const [period, setPeriod] = useState<Period>('short');
     const capitals = dataByPeriod[period];
 

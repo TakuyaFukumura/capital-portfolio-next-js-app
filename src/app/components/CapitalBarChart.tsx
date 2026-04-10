@@ -3,10 +3,10 @@ import {type CapitalWithScore} from '../../../lib/data';
 import {STRATEGY_BAR_COLOR, STRATEGY_LABELS, STRATEGY_TEXT} from './constants';
 
 interface CapitalBarChartProps {
-    capitals: CapitalWithScore[];
+    readonly capitals: ReadonlyArray<CapitalWithScore>;
 }
 
-export default function CapitalBarChart({capitals}: CapitalBarChartProps) {
+export default function CapitalBarChart({capitals}: Readonly<CapitalBarChartProps>) {
     return (
         <div className="space-y-4">
             {capitals.map(cap => {

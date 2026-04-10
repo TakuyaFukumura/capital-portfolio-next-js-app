@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface AchievementBarProps {
-    achievement: number; // 0.0〜1.0
+    readonly achievement: number; // 0.0〜1.0
 }
 
-export default function AchievementBar({achievement}: AchievementBarProps) {
+export default function AchievementBar({achievement}: Readonly<AchievementBarProps>) {
     const pct = Math.round(achievement * 100);
     return (
         <div className="flex items-center gap-2">

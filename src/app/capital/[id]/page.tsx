@@ -4,7 +4,7 @@ import {computeCapitalScores, VALID_PERIODS, type CapitalWithScore, type Period}
 import CapitalDetailClient from './CapitalDetailClient';
 
 interface PageProps {
-    params: { id: string };
+    readonly params: { id: string };
 }
 
 const getScoresByPeriod = cache(() => ({
@@ -16,7 +16,7 @@ const getScoresByPeriod = cache(() => ({
 /**
  * 資本詳細ページ（サーバーコンポーネント）
  */
-export default function CapitalPage({params}: PageProps) {
+export default function CapitalPage({params}: Readonly<PageProps>) {
     const {id} = params;
 
     const scoresByPeriod = getScoresByPeriod();
