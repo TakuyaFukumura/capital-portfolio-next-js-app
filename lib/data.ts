@@ -5,7 +5,11 @@ import {parseCsv} from './csv';
 export type Period = 'short' | 'mid' | 'long';
 export type StrategyType = 'reinforce' | 'maintain' | 'suppress';
 
-export const VALID_PERIODS: Period[] = ['short', 'mid', 'long'];
+export const VALID_PERIODS = ['short', 'mid', 'long'] as const;
+
+export function isPeriod(value: string): value is Period {
+    return VALID_PERIODS.includes(value as (typeof VALID_PERIODS)[number]);
+}
 
 export interface Capital {
     id: string;
@@ -72,7 +76,7 @@ export function loadKpis(): KPI[] {
 export function loadGoals(): Goal[] {
     const content = fs.readFileSync(dataPath('goal.csv'), 'utf-8');
     return parseCsv<{ kpi_id: string; period: string; target_value: string; current_value: string }>(content)
-        .filter(row => VALID_PERIODS.includes(row.period as Period))
+        .filter(row => isPeriod(row.period))
         .map(row => ({
             kpi_id: row.kpi_id,
             period: row.period as Period,
@@ -86,7 +90,7 @@ export function loadStrategies(): Strategy[] {
     const validStrategyTypes: StrategyType[] = ['reinforce', 'maintain', 'suppress'];
     return parseCsv<{ capital_id: string; period: string; strategy_type: string }>(content)
         .filter(row =>
-            VALID_PERIODS.includes(row.period as Period) &&
+            isPeriod(row.period) &&
             validStrategyTypes.includes(row.strategy_type as StrategyType)
         )
         .map(row => ({
