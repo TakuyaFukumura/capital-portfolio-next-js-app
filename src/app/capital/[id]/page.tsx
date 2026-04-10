@@ -21,17 +21,20 @@ export default function CapitalPage({params}: PageProps) {
 
     const scoresByPeriod = getScoresByPeriod();
 
-    const dataByPeriod: Partial<Record<Period, CapitalWithScore>> = {};
-    for (const period of VALID_PERIODS) {
-        const cap = scoresByPeriod[period].find(c => c.id === id);
-        if (!cap) notFound();
-        dataByPeriod[period] = cap;
-    }
+    const dataByPeriod = VALID_PERIODS.reduce<Record<Period, CapitalWithScore>>(
+        (acc, period) => {
+            const cap = scoresByPeriod[period].find(c => c.id === id);
+            if (!cap) notFound();
+            acc[period] = cap;
+            return acc;
+        },
+        {} as Record<Period, CapitalWithScore>
+    );
 
     return (
         <main>
             <CapitalDetailClient
-                dataByPeriod={dataByPeriod as Record<Period, CapitalWithScore>}
+                dataByPeriod={dataByPeriod}
             />
         </main>
     );

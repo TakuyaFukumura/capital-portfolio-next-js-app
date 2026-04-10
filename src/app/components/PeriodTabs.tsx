@@ -15,6 +15,7 @@ export default function PeriodTabs({period, onChange}: PeriodTabsProps) {
             {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
                 <button
                     key={p}
+                    type="button"
                     onClick={() => onChange(p)}
                     className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 ${
                         period === p

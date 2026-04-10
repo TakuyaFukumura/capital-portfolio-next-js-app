@@ -35,7 +35,7 @@
 ### リファクタリング
 
 - lib/data.ts: `VALID_PERIODS` 定数を追加・エクスポートし、期間バリデーション箇所を一元化
-- src/app/api/capitals/route.ts: 期間バリデーションに `VALID_PERIODS` を使用するよう変更
+- src/app/api/capitals/route.ts: 期間バリデーションに `isPeriod()` を使用するよう変更
 - src/app/components/constants.ts: `PERIOD_LABELS`・`STRATEGY_BAR_COLOR`・`STRATEGY_TEXT`・`STRATEGY_FILL`・`STRATEGY_STROKE` を追加し、ストラテジー関連カラー定数をファイル全体で集約
 - src/app/components/PeriodTabs.tsx: 期間タブUIコンポーネントを新規作成し、重複していたタブ実装を共通化
 - src/app/components/AchievementBar.tsx: 達成率バーコンポーネントを新規作成し、重複していたプログレスバー実装を共通化
