@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import {parseCsv} from './csv';
 
 export type Period = 'short' | 'mid' | 'long';
@@ -87,11 +87,11 @@ export function loadGoals(): Goal[] {
 
 export function loadStrategies(): Strategy[] {
     const content = fs.readFileSync(dataPath('strategy.csv'), 'utf-8');
-    const validStrategyTypes: StrategyType[] = ['reinforce', 'maintain', 'suppress'];
+    const validStrategyTypes = new Set<StrategyType>(['reinforce', 'maintain', 'suppress']);
     return parseCsv<{ capital_id: string; period: string; strategy_type: string }>(content)
         .filter(row =>
             isPeriod(row.period) &&
-            validStrategyTypes.includes(row.strategy_type as StrategyType)
+            validStrategyTypes.has(row.strategy_type as StrategyType)
         )
         .map(row => ({
             capital_id: row.capital_id,
@@ -139,7 +139,7 @@ export function computeCapitalScores(period: Period): CapitalWithScore[] {
             const target_value = goal?.target_value ?? 0;
             const current_value = goal?.current_value ?? 0;
             const achievement = target_value > 0
-                ? Math.min(current_value / target_value, 1.0)
+                ? Math.min(current_value / target_value, 1)
                 : 0;
             return {...kpi, target_value, current_value, achievement};
         });
