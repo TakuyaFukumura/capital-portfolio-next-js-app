@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import {type CapitalWithScore} from '../../../lib/data';
 import {STRATEGY_BADGE, STRATEGY_LABELS, TYPE_LABEL} from './constants';
+import AchievementBar from './AchievementBar';
 
 interface KpiTableProps {
     capitals: CapitalWithScore[];
@@ -61,17 +62,7 @@ export default function KpiTable({capitals}: KpiTableProps) {
                                 {kpi.target_value.toLocaleString()} {kpi.unit}
                             </td>
                             <td className="py-2 px-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 min-w-16">
-                                        <div
-                                            className="h-2 rounded-full bg-blue-500"
-                                            style={{width: `${Math.round(kpi.achievement * 100)}%`}}
-                                        />
-                                    </div>
-                                    <span className="text-xs text-gray-600 dark:text-gray-400 w-10 text-right">
-                                        {Math.round(kpi.achievement * 100)}%
-                                    </span>
-                                </div>
+                                <AchievementBar achievement={kpi.achievement}/>
                             </td>
                         </tr>
                     ));

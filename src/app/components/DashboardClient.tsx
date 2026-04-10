@@ -5,16 +5,11 @@ import {type CapitalWithScore, type Period} from '../../../lib/data';
 import RadarChart from './RadarChart';
 import CapitalBarChart from './CapitalBarChart';
 import KpiTable from './KpiTable';
+import PeriodTabs from './PeriodTabs';
 
 interface DashboardClientProps {
     dataByPeriod: Record<Period, CapitalWithScore[]>;
 }
-
-const PERIOD_LABELS: Record<Period, string> = {
-    short: '短期',
-    mid: '中期',
-    long: '長期',
-};
 
 export default function DashboardClient({dataByPeriod}: DashboardClientProps) {
     const [period, setPeriod] = useState<Period>('short');
@@ -23,20 +18,8 @@ export default function DashboardClient({dataByPeriod}: DashboardClientProps) {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* 期間タブ */}
-            <div className="flex gap-2 mb-8">
-                {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
-                    <button
-                        key={p}
-                        onClick={() => setPeriod(p)}
-                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 ${
-                            period === p
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                        }`}
-                    >
-                        {PERIOD_LABELS[p]}
-                    </button>
-                ))}
+            <div className="mb-8">
+                <PeriodTabs period={period} onChange={setPeriod}/>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

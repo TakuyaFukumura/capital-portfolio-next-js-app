@@ -3,31 +3,16 @@
 import Link from 'next/link';
 import {useDarkMode} from './DarkModeProvider';
 
+type Theme = 'light' | 'dark';
+
+const THEME_ICONS: Record<Theme, string> = {light: '☀️', dark: '🌙'};
+const THEME_LABELS: Record<Theme, string> = {light: 'ライトモード', dark: 'ダークモード'};
+
 export default function Header() {
     const {theme, setTheme} = useDarkMode();
 
     const handleThemeToggle = () => {
-        if (theme === 'light') {
-            setTheme('dark');
-        } else {
-            setTheme('light');
-        }
-    };
-
-    const getThemeIcon = () => {
-        if (theme === 'light') {
-            return '☀️';
-        } else {
-            return '🌙';
-        }
-    };
-
-    const getThemeLabel = () => {
-        if (theme === 'light') {
-            return 'ライトモード';
-        } else {
-            return 'ダークモード';
-        }
+        setTheme(theme === 'light' ? 'dark' : 'light');
     };
 
     return (
@@ -60,14 +45,15 @@ export default function Header() {
 
                     <div className="flex items-center">
                         <button
+                            type="button"
                             onClick={handleThemeToggle}
                             className="flex items-center gap-2 px-3 py-2 text-sm font-medium
                             text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700
                             rounded-lg transition-colors duration-200"
-                            title={`現在: ${getThemeLabel()}`}
+                            title={`現在: ${THEME_LABELS[theme]}`}
                         >
-                            <span className="text-lg">{getThemeIcon()}</span>
-                            <span className="hidden sm:inline">{getThemeLabel()}</span>
+                            <span className="text-lg">{THEME_ICONS[theme]}</span>
+                            <span className="hidden sm:inline">{THEME_LABELS[theme]}</span>
                         </button>
                     </div>
                 </div>
